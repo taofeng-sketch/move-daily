@@ -2144,7 +2144,7 @@ Run: `git status --short --branch`, `git remote -v`, and
 Expected: the isolated tree is clean on `main`, the target is public and owned by the intended
 account, and remote `main` resolves to the recorded sanitized SHA.
 
-- [ ] **Step 8: Enable the workflow Pages source and observe deployment**
+- [x] **Step 8: Enable the workflow Pages source and observe deployment**
 
 ```bash
 gh api --method POST repos/taofeng-sketch/move-daily/pages -f build_type=workflow
@@ -2157,7 +2157,7 @@ that `main`, then select the resulting `workflow_dispatch` run whose `headSha` e
 SHA. Watch that exact run to terminal success. Do not infer completion from the newest run, queue
 visibility, a push event, or a Pages URL appearing.
 
-- [ ] **Step 9: Verify the production site independently**
+- [x] **Step 9: Verify the production site independently**
 
 Run:
 
@@ -2171,7 +2171,9 @@ Expected: Pages reports workflow publishing, both URLs return successfully, and 
 
 Open the live site at 390×844 and desktop widths. Verify Start/Resume, one full routine, installed/offline launch, no overflow, manifest/icons/service-worker scope, local storage, captions, and update behaviour on the production origin. Inspect a production screenshot before declaring completion.
 
-- [ ] **Step 10: Record observed release evidence**
+Observed evidence: run [32598744407](https://github.com/taofeng-sketch/move-daily/actions/runs/32598744407) completed successfully with commit `7d2b5cc` on 2026-08-22, and [https://taofeng-sketch.github.io/move-daily/](https://taofeng-sketch.github.io/move-daily/) returned a 200 response.
+
+- [x] **Step 10: Record observed release evidence**
 
 Update README status and project `CLAUDE.md` with the exact source URL, live URL, deployment run URL,
 verified date, and observed capabilities. Export only those reviewed documentation changes into the

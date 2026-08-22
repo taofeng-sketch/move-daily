@@ -2,7 +2,7 @@
 
 **Your plan, one move at a time.** Move Daily is a calm, mobile-first exercise-plan player. It turns two existing routines into paced English guidance with illustrated movement loops, preparation prompts, readiness gates, counters, hold timers, and device-local progress.
 
-> **Release status:** Implemented; live verification pending. The intended public locations are the [Move Daily website](https://taofeng-sketch.github.io/move-daily/) and [source repository](https://github.com/taofeng-sketch/move-daily).
+> **Release status:** Implemented and live verified. Source is published at [https://github.com/taofeng-sketch/move-daily](https://github.com/taofeng-sketch/move-daily), and production is at [https://taofeng-sketch.github.io/move-daily/](https://taofeng-sketch.github.io/move-daily/).
 
 ## Safety boundary
 

@@ -1,7 +1,7 @@
 # Move Daily — Product and Interaction Design
 
 **Date:** 2026-08-22  
-**Status:** Implemented; live verification pending
+**Status:** Implemented and live verified (2026-08-22).
 **Product line:** *Your plan, one move at a time.*
 
 ## 1. Decision

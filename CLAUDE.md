@@ -1,6 +1,6 @@
 # Move Daily
 
-**Status:** Implemented; live verification pending
+**Status:** Implemented and live verified
 **Outcome:** Publish a mobile-first, installable exercise coach that turns a supplied physiotherapy plan into clear, paced, one-tap guided sessions.
 
 ## Project rules
