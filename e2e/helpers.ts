@@ -97,6 +97,15 @@ export async function cleanOpen(page: Page): Promise<void> {
   await expect(page.getByRole('heading', { name: 'Move Daily' })).toBeVisible();
 }
 
+export async function forceNoLocalSpeech(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'speechSynthesis', {
+      configurable: true,
+      value: undefined,
+    });
+  });
+}
+
 export async function seedOpen(page: Page, state: StoredState): Promise<void> {
   await page.goto('./');
   await page.evaluate(

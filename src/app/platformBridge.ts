@@ -87,7 +87,7 @@ export function createPlatformBridge(
         onOfflineReady: () => publish({ offlineReady: true, offlineAvailable: true }),
         onNeedRefresh: (applyUpdate) => publish({ applyUpdate }),
         onRegistered: (registration) => {
-          const activeWorker = registration?.active !== null && registration?.active !== undefined;
+          const activeWorker = registration?.active?.state === 'activated';
           publish({
             registered: registration !== undefined,
             offlineAvailable:

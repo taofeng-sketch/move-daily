@@ -88,6 +88,10 @@ export function PlayerControls({
     view.status === 'active' ||
     view.status === 'awaiting-ready' ||
     view.status === 'phase-transition';
+  const voicePreference = view.voiceEnabled ? 'Voice on' : 'Voice off';
+  const voiceLabel = view.speechAvailable
+    ? voicePreference
+    : `${voicePreference}. Local speech is unavailable; captions and tones remain usable.`;
 
   return (
     <nav aria-label="Session controls" className={styles.controls}>
@@ -116,12 +120,12 @@ export function PlayerControls({
         Faster
       </button>
       <button
-        aria-label={view.voiceEnabled ? 'Voice on' : 'Voice off'}
+        aria-label={voiceLabel}
         className={styles.control}
         onClick={() => actions.setVoiceEnabled(!view.voiceEnabled)}
         type="button"
       >
-        {view.voiceEnabled ? 'Voice on' : 'Voice off'}
+        {voicePreference}{view.speechAvailable ? null : ' · unavailable'}
       </button>
       {view.reducedMotion && isActiveReps ? (
         <button className={styles.primaryButton} onClick={actions.markRep} type="button">

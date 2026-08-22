@@ -87,7 +87,9 @@ test('speech absence, denied Wake Lock, and unavailable storage keep guidance us
   await expect(page.getByText('This session will work, but progress cannot be saved on this device.')).toBeVisible();
   await page.getByRole('button', { name: 'Start Back' }).click();
   await expect(page.getByRole('heading', { name: 'Standing reach: knee bends' })).toBeVisible();
-  await expect(page.getByText('Voice is unavailable. Captions and tones remain usable.')).toBeVisible();
+  await expect(page.getByRole('button', {
+    name: 'Voice on. Local speech is unavailable; captions and tones remain usable.',
+  })).toHaveText('Voice on · unavailable');
   await expect(page.getByRole('button', { name: 'I’m ready' })).toBeVisible();
 });
 
@@ -142,15 +144,14 @@ test('offline reload works only after the first online service-worker readiness 
   await page.goto('./');
   await expect(page.getByRole('heading', { name: 'Move Daily' })).toBeVisible();
   await expect(page.getByText('Ready offline — Move Daily can now open without a connection.')).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.ready;
+    return registration.active?.state ?? null;
+  })).toBe('activated');
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByText('Available offline on this device.')).toBeVisible();
   await page.getByRole('button', { name: 'Done' }).click();
   await expect(page.getByText('Ready offline — Move Daily can now open without a connection.')).toBeVisible();
-
-  await page.reload();
-  await page.getByRole('button', { name: 'Settings' }).click();
-  await expect(page.getByText('Available offline on this device.')).toBeVisible();
-  await page.getByRole('button', { name: 'Done' }).click();
 
   await page.context().setOffline(true);
   await page.reload();

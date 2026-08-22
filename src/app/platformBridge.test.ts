@@ -105,7 +105,10 @@ describe('platform bridge', () => {
     callbacks?.onRegistered({ installing: {} } as ServiceWorkerRegistration);
     expect(bridge.getSnapshot().offlineAvailable).toBe(false);
 
-    callbacks?.onRegistered({ active: {} } as ServiceWorkerRegistration);
+    callbacks?.onRegistered({ active: { state: 'activating' } } as ServiceWorkerRegistration);
+    expect(bridge.getSnapshot().offlineAvailable).toBe(false);
+
+    callbacks?.onRegistered({ active: { state: 'activated' } } as ServiceWorkerRegistration);
     expect(bridge.getSnapshot().offlineAvailable).toBe(true);
 
     let controlledCallbacks: PwaCallbacks | undefined;

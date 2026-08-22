@@ -114,7 +114,13 @@ describe('SessionPlayer', () => {
   });
 
   it('offers complete always-available controls and at least 44px touch targets', () => {
-    render(<SessionPlayer routineId="back" initialSession={activeBackSession()} />);
+    render(
+      <SessionPlayer
+        audio={availableSpeechAudio()}
+        routineId="back"
+        initialSession={activeBackSession()}
+      />,
+    );
 
     for (const name of ['Pause', 'Replay demo', 'Slower', 'Faster', 'Voice on', 'Skip exercise']) {
       const control = screen.getByRole('button', { name });
@@ -716,10 +722,18 @@ describe('SessionPlayer', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: 'Voice on' })).toBeVisible();
-    expect(screen.getByText('Voice is unavailable. Captions and tones remain usable.')).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Voice on' }));
-    expect(screen.getByRole('button', { name: 'Voice off' })).toBeVisible();
+    const unavailableVoice = screen.getByRole('button', {
+      name: 'Voice on. Local speech is unavailable; captions and tones remain usable.',
+    });
+    expect(unavailableVoice).toHaveTextContent('Voice on · unavailable');
+    expect(getComputedStyle(unavailableVoice).minHeight).toBe('44px');
+    expect(getComputedStyle(unavailableVoice).minWidth).toBe('44px');
+    expect(screen.queryByText('Voice is unavailable. Captions and tones remain usable.')).not.toBeInTheDocument();
+
+    fireEvent.click(unavailableVoice);
+    expect(screen.getByRole('button', {
+      name: 'Voice off. Local speech is unavailable; captions and tones remain usable.',
+    })).toHaveTextContent('Voice off · unavailable');
   });
 
   it('records a confirmed final skip as saved rather than complete', () => {

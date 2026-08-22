@@ -97,11 +97,6 @@
   text-align: center;
 }
 
-.capabilityNotice {
-  margin: 0;
-  text-align: center;
-}
-
 .controls {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -258,7 +253,6 @@
   .progress,
   .readyGate,
   .transitionActions,
-  .capabilityNotice,
   .controls {
     grid-column: 2;
   }
@@ -311,10 +305,6 @@
     padding-block: 0.2rem;
     font-size: 0.8rem;
     line-height: 1.2;
-  }
-
-  .capabilityNotice {
-    grid-row: 7;
   }
 }
 

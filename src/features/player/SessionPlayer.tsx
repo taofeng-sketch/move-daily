@@ -161,10 +161,6 @@ export function SessionPlayer(props: SessionPlayerProps): JSX.Element {
           </section>
         ) : null}
 
-        {!view.speechAvailable ? (
-          <p className={styles.capabilityNotice}>Voice is unavailable. Captions and tones remain usable.</p>
-        ) : null}
-
         {!isPaused ? (
           <PlayerControls
             actions={actions}

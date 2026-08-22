@@ -3,6 +3,7 @@ import {
   DEFAULT_STORED_STATE,
   activeToeHold,
   finalBackRep,
+  forceNoLocalSpeech,
   onlyMobile390,
   pausedBackRep,
   readStoredState,
@@ -12,6 +13,7 @@ import {
 } from './helpers';
 
 test('active Player keeps coach, instruction, progress, and dock in the initial viewport', async ({ page }) => {
+  await forceNoLocalSpeech(page);
   await seedOpen(page, { ...DEFAULT_STORED_STATE, activeSession: pausedBackRep() });
   await resumeAndStartNow(page, 'Back');
 
@@ -51,6 +53,7 @@ test('landscape Balance scales the whole coach instead of clipping its SVG', asy
 
 test('landscape readiness keeps its complete control dock in one viewport', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'landscape-844', 'Landscape-specific readiness composition oracle.');
+  await forceNoLocalSpeech(page);
   await page.goto('./');
   await page.evaluate((key) => localStorage.removeItem(key), 'move-daily:app-state:v1');
   await page.reload();

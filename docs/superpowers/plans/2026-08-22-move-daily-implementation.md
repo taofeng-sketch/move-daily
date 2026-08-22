@@ -2070,6 +2070,33 @@ Observed current local candidate after the signature-boundary refinement: 320/32
 92/92 scanner checks, 40 Playwright passes with 80 intentional project skips and zero failures, zero
 public/private scan findings, and zero audit vulnerabilities.
 
+### Post-candidate CI release corrections — 2026-08-22
+
+- **Unavailable local speech and viewport fit:** Ubuntu Chromium has no suitable local English
+  voice. The standalone fallback paragraph added a separate grid row and reproduced the CI geometry
+  exactly: the 320×700 active-player dock ended at 700.53125 px, and the 844×390 readiness surface
+  measured 439 px high. The existing Voice preference control now carries the visible
+  `Voice on · unavailable` / `Voice off · unavailable` state and an accessible name that says local
+  speech is unavailable while captions and tones remain usable. The control remains toggleable and
+  at least 44×44 px; captions, tones, and all capability semantics are unchanged. Layout tests remove
+  speech before first navigation so the fallback branch is deterministic. Rationale: keep required
+  information in an existing control rather than consuming another constrained player row. Cost if
+  wrong: users could lose truthful fallback information or a preference control, or CI-only voice
+  availability could hide clipped controls; correction belongs in the Voice control contract and
+  forced-no-speech viewport tests, never weaker viewport assertions.
+- **Offline readiness and service-worker activation:** `vite-plugin-pwa` can emit
+  `onOfflineReady` when Workbox reaches `installed`, before its worker is actually `activated`, and
+  the platform bridge previously treated any non-null `registration.active` as offline-capable.
+  Registration now resolves the browser's ready registration through an injectable dependency,
+  accepts only `active.state === 'activated'`, waits on `statechange` only while `activating`, forwards
+  readiness once, and suppresses rejected, redundant, deferred-after-cleanup, and post-cleanup paths.
+  The bridge accepts only an exactly activated worker or an existing controller. The browser test
+  conditionally proves the active worker is activated, then reloads offline directly from the first
+  successful online load. Rationale: the notice must describe a lifecycle fact, not a Workbox hook
+  name. Cost if wrong: the app can claim offline safety before it can serve a reload, or a stale
+  listener can publish after teardown; correction belongs in the activation gate, bridge state
+  predicate, and lifecycle tests, without `skipWaiting`, `clientsClaim`, sleeps, retries, or skips.
+
 Preserve these device/browser checks for the root-owned live-verification phase; do not infer them
 from local automation:
 
