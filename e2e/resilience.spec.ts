@@ -165,7 +165,7 @@ test('offline reload works only after the first online service-worker readiness 
   await expect(page.getByText('Ready offline — Move Daily can now open without a connection.')).toBeVisible();
 
   await page.context().setOffline(true);
-  await page.reload();
+  await page.goto('./', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'Move Daily' })).toBeVisible();
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByText('Available offline on this device.')).toBeVisible();
