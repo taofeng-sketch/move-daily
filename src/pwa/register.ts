@@ -10,6 +10,13 @@ export interface PwaCallbacks {
 
 export interface PwaRegistrationDependencies {
   readonly getReadyRegistration?: () => Promise<ServiceWorkerRegistration>;
+  readonly getServiceWorkerContainer?: () => ServiceWorkerContainerSource | undefined;
+}
+
+interface ServiceWorkerContainerSource {
+  readonly controller: ServiceWorker | null;
+  addEventListener(type: 'controllerchange', listener: EventListener): void;
+  removeEventListener(type: 'controllerchange', listener: EventListener): void;
 }
 
 export function registerMoveDailyPwa(
@@ -19,18 +26,20 @@ export function registerMoveDailyPwa(
   let active = true;
   let offlineGateStarted = false;
   let offlineForwarded = false;
-  let stopActivationListener: (() => void) | null = null;
+  let stopReadinessListeners: (() => void) | null = null;
   const getReadyRegistration = dependencies.getReadyRegistration ?? getBrowserReadyRegistration;
+  const getServiceWorkerContainer =
+    dependencies.getServiceWorkerContainer ?? getBrowserServiceWorkerContainer;
 
-  const clearActivationListener = (): void => {
-    stopActivationListener?.();
-    stopActivationListener = null;
+  const clearReadinessListeners = (): void => {
+    stopReadinessListeners?.();
+    stopReadinessListeners = null;
   };
 
   const forwardOfflineReady = (): void => {
     if (!active || offlineForwarded) return;
     offlineForwarded = true;
-    clearActivationListener();
+    clearReadinessListeners();
     safeCallback(active, callbacks.onOfflineReady);
   };
 
@@ -48,22 +57,56 @@ export function registerMoveDailyPwa(
     void readyRegistration.then((registration) => {
       if (!active || offlineForwarded) return;
       const worker = registration.active;
-      if (worker?.state === 'activated') {
-        forwardOfflineReady();
+      if (worker?.state !== 'activating' && worker?.state !== 'activated') return;
+
+      let serviceWorkerContainer: ServiceWorkerContainerSource | undefined;
+      try {
+        serviceWorkerContainer = getServiceWorkerContainer();
+      } catch {
         return;
       }
-      if (worker?.state !== 'activating') return;
+      if (!serviceWorkerContainer) return;
 
-      const onStateChange = (): void => {
-        if (!active || worker.state === 'redundant') {
-          clearActivationListener();
+      let workerListenerAttached = false;
+      let controllerListenerAttached = false;
+      let listenersReady = false;
+      const removeListeners = (): void => {
+        listenersReady = false;
+        if (workerListenerAttached) {
+          worker.removeEventListener('statechange', onReadinessChange);
+          workerListenerAttached = false;
+        }
+        if (controllerListenerAttached) {
+          serviceWorkerContainer.removeEventListener('controllerchange', onReadinessChange);
+          controllerListenerAttached = false;
+        }
+      };
+      const onReadinessChange = (): void => {
+        if (!listenersReady) return;
+        if (!active || offlineForwarded || worker.state === 'redundant') {
+          clearReadinessListeners();
           return;
         }
-        if (worker.state === 'activated') forwardOfflineReady();
+        if (
+          worker.state === 'activated' &&
+          registration.active === worker &&
+          serviceWorkerContainer.controller === worker
+        ) {
+          forwardOfflineReady();
+        }
       };
-      worker.addEventListener('statechange', onStateChange);
-      stopActivationListener = () => worker.removeEventListener('statechange', onStateChange);
-      onStateChange();
+
+      stopReadinessListeners = removeListeners;
+      try {
+        worker.addEventListener('statechange', onReadinessChange);
+        workerListenerAttached = true;
+        serviceWorkerContainer.addEventListener('controllerchange', onReadinessChange);
+        controllerListenerAttached = true;
+        listenersReady = true;
+        onReadinessChange();
+      } catch {
+        clearReadinessListeners();
+      }
     }).catch(() => {
       // A rejected readiness promise cannot establish offline availability.
     });
@@ -98,7 +141,7 @@ export function registerMoveDailyPwa(
 
   return () => {
     active = false;
-    clearActivationListener();
+    clearReadinessListeners();
   };
 }
 
@@ -108,6 +151,14 @@ function getBrowserReadyRegistration(): Promise<ServiceWorkerRegistration> {
     return ready ?? Promise.reject(new Error('Service workers are unavailable'));
   } catch (error) {
     return Promise.reject(error);
+  }
+}
+
+function getBrowserServiceWorkerContainer(): ServiceWorkerContainer | undefined {
+  try {
+    return typeof navigator === 'undefined' ? undefined : navigator.serviceWorker;
+  } catch {
+    return undefined;
   }
 }
 

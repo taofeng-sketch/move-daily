@@ -146,8 +146,19 @@ test('offline reload works only after the first online service-worker readiness 
   await expect(page.getByText('Ready offline — Move Daily can now open without a connection.')).toBeVisible({ timeout: 20_000 });
   await expect.poll(() => page.evaluate(async () => {
     const registration = await navigator.serviceWorker.ready;
-    return registration.active?.state ?? null;
-  })).toBe('activated');
+    const controller = navigator.serviceWorker.controller;
+    return {
+      activeState: registration.active?.state ?? null,
+      controllerState: controller?.state ?? null,
+      controllerMatchesActive: controller !== null && controller === registration.active,
+      scopePath: new URL(registration.scope).pathname,
+    };
+  })).toEqual({
+    activeState: 'activated',
+    controllerState: 'activated',
+    controllerMatchesActive: true,
+    scopePath: '/move-daily/',
+  });
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByText('Available offline on this device.')).toBeVisible();
   await page.getByRole('button', { name: 'Done' }).click();

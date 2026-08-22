@@ -90,11 +90,15 @@ describe('platform bridge', () => {
     expect(stopPwa).toHaveBeenCalledOnce();
   });
 
-  it('derives offline availability from an active worker or controller, never an installing worker', () => {
+  it('accepts revisit availability only when the exact activated worker controls this page', () => {
     let callbacks: PwaCallbacks | undefined;
+    const worker = { state: 'activated' } as ServiceWorker;
+    const otherWorker = { state: 'activated' } as ServiceWorker;
+    let controller: ServiceWorker | null = otherWorker;
     const bridge = createPlatformBridge({
       observeInstall: () => vi.fn(),
-      hasServiceWorkerController: () => false,
+      registrationControlsPage: (registration) =>
+        registration.active?.state === 'activated' && registration.active === controller,
       registerPwa: (nextCallbacks) => {
         callbacks = nextCallbacks;
         return vi.fn();
@@ -105,25 +109,32 @@ describe('platform bridge', () => {
     callbacks?.onRegistered({ installing: {} } as ServiceWorkerRegistration);
     expect(bridge.getSnapshot().offlineAvailable).toBe(false);
 
-    callbacks?.onRegistered({ active: { state: 'activating' } } as ServiceWorkerRegistration);
+    callbacks?.onRegistered({ active: worker } as ServiceWorkerRegistration);
     expect(bridge.getSnapshot().offlineAvailable).toBe(false);
 
-    callbacks?.onRegistered({ active: { state: 'activated' } } as ServiceWorkerRegistration);
+    controller = worker;
+    callbacks?.onRegistered({ active: worker } as ServiceWorkerRegistration);
     expect(bridge.getSnapshot().offlineAvailable).toBe(true);
+  });
 
-    let controlledCallbacks: PwaCallbacks | undefined;
-    const controlledBridge = createPlatformBridge({
+  it('accepts verified initial-install readiness without inferring from an arbitrary controller', () => {
+    let callbacks: PwaCallbacks | undefined;
+    const bridge = createPlatformBridge({
       observeInstall: () => vi.fn(),
-      hasServiceWorkerController: () => true,
+      registrationControlsPage: () => false,
       registerPwa: (nextCallbacks) => {
-        controlledCallbacks = nextCallbacks;
+        callbacks = nextCallbacks;
         return vi.fn();
       },
     });
-    controlledBridge.start();
-    expect(controlledBridge.getSnapshot().offlineAvailable).toBe(true);
-    controlledCallbacks?.onRegistered(undefined);
-    expect(controlledBridge.getSnapshot().offlineAvailable).toBe(true);
+    bridge.start();
+    expect(bridge.getSnapshot().offlineAvailable).toBe(false);
+
+    callbacks?.onRegistered({ active: { state: 'activated' } } as ServiceWorkerRegistration);
+    expect(bridge.getSnapshot().offlineAvailable).toBe(false);
+
+    callbacks?.onOfflineReady();
+    expect(bridge.getSnapshot()).toMatchObject({ offlineReady: true, offlineAvailable: true });
   });
 
   it('retires a consumed install prompt across screen remounts until a genuinely new prompt arrives', async () => {

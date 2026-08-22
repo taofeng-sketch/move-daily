@@ -20,7 +20,7 @@ export default defineConfig({
       },
       workbox: {
         cleanupOutdatedCaches: true,
-        clientsClaim: false,
+        clientsClaim: true,
         globPatterns: ['**/*.{js,css,html,png,svg,woff2,txt,webmanifest}'],
         navigateFallback: 'index.html',
         runtimeCaching: [],

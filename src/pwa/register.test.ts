@@ -27,6 +27,24 @@ function registrationWith(worker: FakeServiceWorker): ServiceWorkerRegistration 
   return { active: worker as unknown as ServiceWorker } as ServiceWorkerRegistration;
 }
 
+function asServiceWorker(worker: FakeServiceWorker): ServiceWorker {
+  return worker as unknown as ServiceWorker;
+}
+
+class FakeServiceWorkerContainer extends EventTarget {
+  controller: ServiceWorker | null;
+
+  constructor(controller: ServiceWorker | null = null) {
+    super();
+    this.controller = controller;
+  }
+
+  setController(controller: ServiceWorker | null): void {
+    this.controller = controller;
+    this.dispatchEvent(new Event('controllerchange'));
+  }
+}
+
 function deferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((resolvePromise) => {
@@ -49,9 +67,12 @@ describe('registerMoveDailyPwa', () => {
       onNeedRefresh: vi.fn<(update: () => Promise<void>) => void>(),
       onRegistered: vi.fn(),
     };
-    const registration = registrationWith(new FakeServiceWorker('activated'));
+    const worker = new FakeServiceWorker('activated');
+    const registration = registrationWith(worker);
+    const serviceWorkerContainer = new FakeServiceWorkerContainer(asServiceWorker(worker));
     registerMoveDailyPwa(callbacks, {
       getReadyRegistration: vi.fn().mockResolvedValue(registration),
+      getServiceWorkerContainer: () => serviceWorkerContainer,
     });
     const options = pwa.registerSW.mock.calls[0]?.[0];
 
@@ -71,14 +92,16 @@ describe('registerMoveDailyPwa', () => {
     expect(pwa.update).toHaveBeenCalledOnce();
   });
 
-  it('waits through activating, removes its listener, and forwards readiness once', async () => {
+  it('waits for both activation and current-page control, then forwards readiness once', async () => {
     const worker = new FakeServiceWorker('activating');
-    const removeEventListener = vi.spyOn(worker, 'removeEventListener');
+    const workerRemoveEventListener = vi.spyOn(worker, 'removeEventListener');
+    const serviceWorkerContainer = new FakeServiceWorkerContainer();
+    const containerRemoveEventListener = vi.spyOn(serviceWorkerContainer, 'removeEventListener');
     const onOfflineReady = vi.fn();
     const getReadyRegistration = vi.fn().mockResolvedValue(registrationWith(worker));
     registerMoveDailyPwa(
       { onOfflineReady, onNeedRefresh: vi.fn(), onRegistered: vi.fn() },
-      { getReadyRegistration },
+      { getReadyRegistration, getServiceWorkerContainer: () => serviceWorkerContainer },
     );
     const options = pwa.registerSW.mock.calls[0]?.[0];
 
@@ -89,9 +112,83 @@ describe('registerMoveDailyPwa', () => {
     expect(getReadyRegistration).toHaveBeenCalledOnce();
 
     worker.transitionTo('activated');
+    expect(onOfflineReady).not.toHaveBeenCalled();
+    serviceWorkerContainer.setController(asServiceWorker(worker));
     worker.transitionTo('redundant');
     expect(onOfflineReady).toHaveBeenCalledOnce();
-    expect(removeEventListener).toHaveBeenCalledOnce();
+    expect(workerRemoveEventListener).toHaveBeenCalledOnce();
+    expect(containerRemoveEventListener).toHaveBeenCalledOnce();
+  });
+
+  it('rechecks activation after attaching listeners to close a statechange race', async () => {
+    const worker = new FakeServiceWorker('activating');
+    const serviceWorkerContainer = new FakeServiceWorkerContainer(asServiceWorker(worker));
+    const originalAddEventListener = worker.addEventListener.bind(worker);
+    vi.spyOn(worker, 'addEventListener').mockImplementation((type, listener, options) => {
+      originalAddEventListener(type, listener, options);
+      if (type === 'statechange') worker.state = 'activated';
+    });
+    const onOfflineReady = vi.fn();
+    registerMoveDailyPwa(
+      { onOfflineReady, onNeedRefresh: vi.fn(), onRegistered: vi.fn() },
+      {
+        getReadyRegistration: () => Promise.resolve(registrationWith(worker)),
+        getServiceWorkerContainer: () => serviceWorkerContainer,
+      },
+    );
+
+    pwa.registerSW.mock.calls[0]?.[0].onOfflineReady();
+    await Promise.resolve();
+    expect(onOfflineReady).toHaveBeenCalledOnce();
+  });
+
+  it('rechecks page control after attaching listeners to close a controllerchange race', async () => {
+    const worker = new FakeServiceWorker('activated');
+    const serviceWorkerContainer = new FakeServiceWorkerContainer();
+    const originalAddEventListener = serviceWorkerContainer.addEventListener.bind(serviceWorkerContainer);
+    vi.spyOn(serviceWorkerContainer, 'addEventListener').mockImplementation((type, listener, options) => {
+      originalAddEventListener(type, listener, options);
+      if (type === 'controllerchange') serviceWorkerContainer.controller = asServiceWorker(worker);
+    });
+    const onOfflineReady = vi.fn();
+    registerMoveDailyPwa(
+      { onOfflineReady, onNeedRefresh: vi.fn(), onRegistered: vi.fn() },
+      {
+        getReadyRegistration: () => Promise.resolve(registrationWith(worker)),
+        getServiceWorkerContainer: () => serviceWorkerContainer,
+      },
+    );
+
+    pwa.registerSW.mock.calls[0]?.[0].onOfflineReady();
+    await Promise.resolve();
+    expect(onOfflineReady).toHaveBeenCalledOnce();
+  });
+
+  it('does not claim readiness for an activated worker that is not the current controller', async () => {
+    const worker = new FakeServiceWorker('activated');
+    const otherWorker = new FakeServiceWorker('activated');
+    const serviceWorkerContainer = new FakeServiceWorkerContainer(asServiceWorker(otherWorker));
+    const workerRemoveEventListener = vi.spyOn(worker, 'removeEventListener');
+    const containerRemoveEventListener = vi.spyOn(serviceWorkerContainer, 'removeEventListener');
+    const onOfflineReady = vi.fn();
+    const cleanup = registerMoveDailyPwa(
+      { onOfflineReady, onNeedRefresh: vi.fn(), onRegistered: vi.fn() },
+      {
+        getReadyRegistration: () => Promise.resolve(registrationWith(worker)),
+        getServiceWorkerContainer: () => serviceWorkerContainer,
+      },
+    );
+
+    pwa.registerSW.mock.calls[0]?.[0].onOfflineReady();
+    await Promise.resolve();
+    serviceWorkerContainer.setController(asServiceWorker(otherWorker));
+    expect(onOfflineReady).not.toHaveBeenCalled();
+
+    cleanup();
+    serviceWorkerContainer.setController(asServiceWorker(worker));
+    expect(onOfflineReady).not.toHaveBeenCalled();
+    expect(workerRemoveEventListener).toHaveBeenCalledOnce();
+    expect(containerRemoveEventListener).toHaveBeenCalledOnce();
   });
 
   it.each(['installing', 'redundant'] as const)(
@@ -100,7 +197,10 @@ describe('registerMoveDailyPwa', () => {
       const onOfflineReady = vi.fn();
       registerMoveDailyPwa(
         { onOfflineReady, onNeedRefresh: vi.fn(), onRegistered: vi.fn() },
-        { getReadyRegistration: () => Promise.resolve(registrationWith(new FakeServiceWorker(state))) },
+        {
+          getReadyRegistration: () => Promise.resolve(registrationWith(new FakeServiceWorker(state))),
+          getServiceWorkerContainer: () => new FakeServiceWorkerContainer(),
+        },
       );
 
       pwa.registerSW.mock.calls[0]?.[0].onOfflineReady();
@@ -137,19 +237,26 @@ describe('registerMoveDailyPwa', () => {
 
   it('removes an activating listener on cleanup and suppresses later activation', async () => {
     const worker = new FakeServiceWorker('activating');
-    const removeEventListener = vi.spyOn(worker, 'removeEventListener');
+    const serviceWorkerContainer = new FakeServiceWorkerContainer();
+    const workerRemoveEventListener = vi.spyOn(worker, 'removeEventListener');
+    const containerRemoveEventListener = vi.spyOn(serviceWorkerContainer, 'removeEventListener');
     const onOfflineReady = vi.fn();
     const cleanup = registerMoveDailyPwa(
       { onOfflineReady, onNeedRefresh: vi.fn(), onRegistered: vi.fn() },
-      { getReadyRegistration: () => Promise.resolve(registrationWith(worker)) },
+      {
+        getReadyRegistration: () => Promise.resolve(registrationWith(worker)),
+        getServiceWorkerContainer: () => serviceWorkerContainer,
+      },
     );
     pwa.registerSW.mock.calls[0]?.[0].onOfflineReady();
     await Promise.resolve();
 
     cleanup();
     worker.transitionTo('activated');
+    serviceWorkerContainer.setController(asServiceWorker(worker));
     expect(onOfflineReady).not.toHaveBeenCalled();
-    expect(removeEventListener).toHaveBeenCalledOnce();
+    expect(workerRemoveEventListener).toHaveBeenCalledOnce();
+    expect(containerRemoveEventListener).toHaveBeenCalledOnce();
   });
 
   it('suppresses virtual-module callbacks after cleanup', () => {

@@ -21,7 +21,7 @@ export interface PlatformBridge {
 export interface PlatformBridgeDependencies {
   readonly observeInstall?: typeof observeInstallPrompt;
   readonly registerPwa?: (callbacks: PwaCallbacks) => () => void;
-  readonly hasServiceWorkerController?: () => boolean;
+  readonly registrationControlsPage?: (registration: ServiceWorkerRegistration) => boolean;
 }
 
 const INITIAL_SNAPSHOT: PlatformSnapshot = {
@@ -37,8 +37,8 @@ export function createPlatformBridge(
 ): PlatformBridge {
   const observeInstall = dependencies.observeInstall ?? observeInstallPrompt;
   const registerPwa = dependencies.registerPwa ?? registerMoveDailyPwa;
-  const hasServiceWorkerController =
-    dependencies.hasServiceWorkerController ?? browserHasServiceWorkerController;
+  const registrationControlsPage =
+    dependencies.registrationControlsPage ?? browserRegistrationControlsPage;
   const listeners = new Set<() => void>();
   let snapshot = INITIAL_SNAPSHOT;
   let started = false;
@@ -79,21 +79,17 @@ export function createPlatformBridge(
     start() {
       if (started || stopped) return;
       started = true;
-      if (safeHasServiceWorkerController(hasServiceWorkerController)) {
-        publish({ offlineAvailable: true });
-      }
       stopInstall = observeInstall(acceptInstallState);
       stopPwa = registerPwa({
         onOfflineReady: () => publish({ offlineReady: true, offlineAvailable: true }),
         onNeedRefresh: (applyUpdate) => publish({ applyUpdate }),
         onRegistered: (registration) => {
-          const activeWorker = registration?.active?.state === 'activated';
           publish({
             registered: registration !== undefined,
             offlineAvailable:
               snapshot.offlineAvailable ||
-              activeWorker ||
-              safeHasServiceWorkerController(hasServiceWorkerController),
+              (registration !== undefined &&
+                safeRegistrationControlsPage(registrationControlsPage, registration)),
           });
         },
       });
@@ -114,16 +110,25 @@ export function createPlatformBridge(
   };
 }
 
-function safeHasServiceWorkerController(reader: () => boolean): boolean {
+function safeRegistrationControlsPage(
+  predicate: (registration: ServiceWorkerRegistration) => boolean,
+  registration: ServiceWorkerRegistration,
+): boolean {
   try {
-    return reader();
+    return predicate(registration);
   } catch {
     return false;
   }
 }
 
-function browserHasServiceWorkerController(): boolean {
-  return navigator.serviceWorker?.controller !== null && navigator.serviceWorker?.controller !== undefined;
+function browserRegistrationControlsPage(registration: ServiceWorkerRegistration): boolean {
+  const worker = registration.active;
+  if (worker?.state !== 'activated') return false;
+  try {
+    return typeof navigator !== 'undefined' && navigator.serviceWorker?.controller === worker;
+  } catch {
+    return false;
+  }
 }
 
 export function resolveInstallInstructions(state: InstallState): readonly string[] {
