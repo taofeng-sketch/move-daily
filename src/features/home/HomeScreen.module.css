@@ -1,0 +1,316 @@
+.home {
+  width: min(100%, 46rem);
+  margin: 0 auto;
+  padding: calc(1.75rem + var(--safe-area-top)) max(1rem, var(--safe-area-right)) calc(2.5rem + var(--safe-area-bottom)) max(1rem, var(--safe-area-left));
+}
+
+.header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+}
+
+.cardHeading {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr));
+}
+
+.header,
+.cardHeading {
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.header > div,
+.cardHeading > div {
+  min-width: 0;
+}
+
+.header p,
+.header h1,
+.cardHeading h2,
+.frequency {
+  overflow-wrap: break-word;
+}
+
+.productLine,
+.date,
+.estimate,
+.equipment,
+.resumeEyebrow {
+  color: var(--ink-muted);
+}
+
+.productLine,
+.resumeEyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.header h1,
+.routineCard h2 {
+  margin: 0.15rem 0;
+  font-family: var(--font-display);
+  line-height: 1.1;
+}
+
+.header h1 {
+  font-size: clamp(2.6rem, 11vw, 4.35rem);
+  letter-spacing: -0.055em;
+}
+
+.date {
+  display: inline-block;
+  margin-top: 0.15rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.4rem;
+}
+
+.settings,
+.primaryAction {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 0.75rem;
+  cursor: pointer;
+}
+
+.settings {
+  justify-self: end;
+  border: 1px solid var(--line);
+  background: rgb(255 253 247 / 72%);
+  color: var(--ink);
+  padding: 0.5rem 0.75rem;
+}
+
+.routineList {
+  display: grid;
+  gap: 1.1rem;
+  margin-top: 1.5rem;
+}
+
+.routineCard,
+.resumeCard {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+  padding: 1.35rem;
+}
+
+.routineCard {
+  border-top: 0.35rem solid var(--coach);
+}
+
+.routineCard:nth-child(2) {
+  border-top-color: var(--action);
+}
+
+.routineCard::after {
+  position: absolute;
+  z-index: 0;
+  right: -0.08em;
+  bottom: -0.38em;
+  color: rgb(23 32 29 / 3.5%);
+  content: '01';
+  font-family: var(--font-display);
+  font-size: 8rem;
+  font-weight: 800;
+  letter-spacing: -0.08em;
+  pointer-events: none;
+}
+
+.routineCard:nth-child(2)::after {
+  content: '02';
+}
+
+.routineCard > *,
+.resumeCard > * {
+  position: relative;
+  z-index: 1;
+}
+
+.resumeCard {
+  margin-top: 1.5rem;
+  border-top: 0.35rem solid var(--coach-deep);
+}
+
+.resumeCard p,
+.routineCard p {
+  margin-top: 0.55rem;
+}
+
+.frequency {
+  justify-self: end;
+  margin: 0;
+  color: var(--coach-deep);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.estimate {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.equipment {
+  font-size: 0.95rem;
+}
+
+.primaryAction {
+  width: 100%;
+  margin-top: 1.25rem;
+  border: 1px solid var(--action-dark);
+  background: var(--action);
+  color: #1d150f;
+  font-weight: 800;
+  box-shadow: 0 0.2rem 0 var(--action-dark);
+  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.primaryAction:active {
+  transform: translateY(0.15rem);
+  box-shadow: 0 0.05rem 0 var(--action-dark);
+}
+
+.resumeCard .primaryAction {
+  display: grid;
+  gap: 0.25rem;
+  text-align: left;
+}
+
+.resumeCard .resumeEyebrow {
+  color: #523020;
+}
+
+.resumeTitle {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1.1;
+}
+
+.resumeDetails {
+  font-weight: 600;
+}
+
+.weeklyProgress {
+  margin-top: 1rem;
+}
+
+.weeklyCaption {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.dayDots,
+.targetMarks {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dayDots {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.targetMarks {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dayDots li,
+.targetMarks li {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: 1.75rem;
+  aspect-ratio: 1;
+  justify-self: center;
+  place-items: center;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.header,
+.routineCard,
+.resumeCard {
+  animation: editorial-enter 420ms both cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+.routineCard:nth-child(1) {
+  animation-delay: 70ms;
+}
+
+.routineCard:nth-child(2) {
+  animation-delay: 140ms;
+}
+
+.resumeCard {
+  animation-delay: 70ms;
+}
+
+@keyframes editorial-enter {
+  from {
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+:global([data-reduced-motion='true']) .header,
+:global([data-reduced-motion='true']) .routineCard,
+:global([data-reduced-motion='true']) .resumeCard {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .routineCard,
+  .resumeCard {
+    animation: none;
+  }
+}
+
+@media (hover: hover) {
+  .settings:hover {
+    border-color: var(--ink-muted);
+    background: var(--paper-raised);
+  }
+
+  .primaryAction:hover {
+    background: color-mix(in srgb, var(--action) 88%, white);
+  }
+}
+
+.dayDots .completedDot,
+.targetMarks .completedMark {
+  border-color: var(--success);
+  background: var(--success);
+  color: #fff;
+}
+
+.targetMarks li {
+  max-width: none;
+  aspect-ratio: auto;
+  min-height: 1.75rem;
+  border-radius: 0.35rem;
+}
+
+@media (min-width: 42rem) {
+  .routineList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .routineCard:nth-child(2) {
+    margin-top: 2.4rem;
+  }
+}

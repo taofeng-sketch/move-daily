@@ -1,0 +1,58 @@
+.app {
+  min-height: 100dvh;
+}
+
+.noticeStack {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: min(100% - 2rem, 46rem);
+  margin: 0 auto;
+  gap: 0.5rem;
+  padding-top: max(0.75rem, var(--safe-area-top));
+}
+
+.statusNotice,
+.actionNotice,
+.noticeStack aside {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-left: 0.3rem solid var(--coach-deep);
+  border-radius: var(--radius-sm);
+  background: var(--paper-raised);
+  box-shadow: 0 0.4rem 1.2rem rgb(23 32 29 / 8%);
+  padding: 0.7rem 0.85rem;
+}
+
+.actionNotice,
+.noticeStack aside {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.actionNotice p,
+.noticeStack aside p {
+  margin: 0;
+}
+
+.actionNotice button,
+.noticeStack aside button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+
+@media (max-width: 24rem) {
+  .actionNotice,
+  .noticeStack aside {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,83 @@
+.coachText {
+  fill: var(--ink);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.smallText {
+  fill: var(--ink-muted);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.outline {
+  fill: none;
+  stroke: var(--ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.softPanel {
+  fill: var(--paper-raised);
+  stroke: var(--line);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.reducedPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2rem minmax(0, 1fr);
+  align-items: center;
+  width: min(100%, 40rem);
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+}
+
+.poseCard {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+}
+
+.poseCardLabel {
+  display: block;
+  padding: 0.35rem 0.5rem 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.poseGraphic {
+  display: block;
+}
+
+.poseGraphic svg {
+  width: 100%;
+}
+
+.reducedArrow {
+  display: block;
+  width: 2rem;
+  height: 3rem;
+}
+
+@media (max-width: 340px) {
+  .reducedPanel {
+    grid-template-columns: minmax(0, 1fr) 1.5rem minmax(0, 1fr);
+    padding: 0.35rem;
+  }
+
+  .reducedArrow {
+    width: 1.5rem;
+  }
+}

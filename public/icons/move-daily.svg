@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Move Daily movement figure">
+  <rect width="512" height="512" rx="96" fill="#f4f0e7" />
+  <circle cx="230" cy="126" r="42" fill="#1d647d" />
+  <path d="M224 188c28 25 51 57 62 96" fill="none" stroke="#1d647d" stroke-width="42" stroke-linecap="round" />
+  <path d="M239 216 156 282" fill="none" stroke="#57a8c4" stroke-width="38" stroke-linecap="round" />
+  <path d="m278 280 80 80" fill="none" stroke="#1d647d" stroke-width="42" stroke-linecap="round" />
+  <path d="m278 282-54 111" fill="none" stroke="#57a8c4" stroke-width="42" stroke-linecap="round" />
+  <path d="M128 357c26 39 73 65 127 65 63 0 117-35 139-86" fill="none" stroke="#f06b3e" stroke-width="28" stroke-linecap="round" />
+  <path d="m365 321 38 5-8 39" fill="#f06b3e" />
+</svg>

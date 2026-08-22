@@ -1,0 +1,18 @@
+:root {
+  --paper: #f4f0e7;
+  --paper-raised: #fffdf7;
+  --ink: #17201d;
+  --ink-muted: #5f6964;
+  --coach: #57a8c4;
+  --coach-deep: #1d647d;
+  --action: #f06b3e;
+  --action-dark: #b83e1f;
+  --line: #cad1c9;
+  --success: #287a59;
+  --focus: #153f9e;
+  --radius-sm: 0.75rem;
+  --radius-lg: 1.5rem;
+  --shadow-card: 0 1rem 3rem rgb(23 32 29 / 10%);
+  --font-display: 'Bricolage Grotesque Variable', sans-serif;
+  --font-body: 'Atkinson Hyperlegible Next Variable', sans-serif;
+}

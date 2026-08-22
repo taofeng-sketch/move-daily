@@ -1,0 +1,251 @@
+.settings {
+  width: min(100%, 46rem);
+  margin: 0 auto;
+  padding: calc(1.5rem + var(--safe-area-top)) max(1rem, var(--safe-area-right)) calc(2rem + var(--safe-area-bottom)) max(1rem, var(--safe-area-left));
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.header h1,
+.card h2,
+.resetDialog h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 1.1;
+}
+
+.header h1 {
+  margin-top: 0.15rem;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+}
+
+.productLine {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.card {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem;
+}
+
+.updateCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  border: 1px solid var(--coach-deep);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--coach) 11%, var(--paper-raised));
+  padding: 1rem 1.25rem;
+}
+
+.updateCard h2,
+.updateCard p {
+  margin: 0;
+}
+
+.updateCard h2 {
+  font-family: var(--font-display);
+}
+
+.card p,
+.resetDialog p {
+  margin: 0;
+}
+
+.card h2,
+.resetDialog h2 {
+  font-size: 1.6rem;
+}
+
+.fieldset {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.fieldset + .fieldset {
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+
+.fieldset legend {
+  margin-bottom: 0.5rem;
+  padding: 0;
+  font-weight: 800;
+}
+
+.choiceGrid,
+.rowActions,
+.dialogActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.choice,
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+}
+
+.choice:has(input:checked),
+.toggleRow:has(input:checked) {
+  border-color: var(--coach-deep);
+  background: color-mix(in srgb, var(--coach) 16%, var(--paper-raised));
+}
+
+.choice input,
+.toggleRow input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+}
+
+.helper,
+.instructions {
+  color: var(--ink-muted);
+}
+
+.helper {
+  font-size: 0.925rem;
+}
+
+.instructions {
+  margin: 0;
+  padding-left: 1.35rem;
+}
+
+.instructions li + li {
+  margin-top: 0.35rem;
+}
+
+.quietButton,
+.installButton,
+.destructiveButton,
+.dialogActions button {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+}
+
+.installButton {
+  justify-self: start;
+  border-color: var(--action-dark);
+  background: var(--action);
+  color: #1d150f;
+  font-weight: 800;
+}
+
+.installButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.boundary,
+.strongLine {
+  border-left: 0.25rem solid var(--coach);
+  padding: 0.5rem 0.75rem;
+}
+
+.strongLine {
+  font-weight: 800;
+}
+
+.dataCard {
+  border-color: color-mix(in srgb, var(--action-dark) 38%, var(--line));
+}
+
+.destructiveButton {
+  justify-self: start;
+  border-color: var(--action-dark);
+  color: var(--action-dark);
+  font-weight: 800;
+}
+
+.backdrop {
+  display: grid;
+  place-items: center;
+  position: fixed;
+  z-index: 11;
+  inset: 0;
+  padding: max(1rem, var(--safe-area-top)) max(1rem, var(--safe-area-right)) max(1rem, var(--safe-area-bottom)) max(1rem, var(--safe-area-left));
+  background: rgb(23 32 29 / 48%);
+}
+
+.resetDialog {
+  display: grid;
+  gap: 0.85rem;
+  width: min(100%, 30rem);
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem;
+}
+
+.dialogActions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 24rem) {
+  .backdrop {
+    padding: max(8px, var(--safe-area-top)) max(8px, var(--safe-area-right)) max(8px, var(--safe-area-bottom)) max(8px, var(--safe-area-left));
+  }
+
+  .resetDialog {
+    gap: 8px;
+    max-height: calc(100dvh - 16px);
+    padding: 12px;
+  }
+
+  .dialogActions {
+    gap: 8px;
+  }
+
+  .dialogActions button {
+    padding-block: 4px;
+  }
+
+  .updateCard {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .choice,
+  .rowActions > button {
+    width: 100%;
+  }
+}

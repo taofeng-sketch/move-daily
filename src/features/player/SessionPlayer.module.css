@@ -1,0 +1,326 @@
+.player {
+  box-sizing: border-box;
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+}
+
+.nonModalSurface {
+  display: grid;
+  grid-template-rows: auto minmax(10rem, 1fr);
+  grid-auto-rows: auto;
+  gap: clamp(0.4rem, 1.1dvh, 0.7rem);
+  width: min(100%, 52rem);
+  height: 100%;
+  margin: 0 auto;
+}
+
+.nonModalSurface[aria-hidden='true'] {
+  pointer-events: none;
+  user-select: none;
+}
+
+.pauseSheet[inert] {
+  pointer-events: none;
+}
+
+.topRail,
+.progress,
+.transitionActions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.coachStage {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+
+.coachStage > svg {
+  width: min(100%, 20rem);
+  height: auto;
+  max-height: 100%;
+}
+
+.coachStage > div {
+  max-width: 100%;
+}
+
+.instruction {
+  align-self: center;
+  text-align: center;
+}
+
+.instruction h1,
+.instruction p,
+.pauseSheet h2,
+.pauseSheet p {
+  margin: 0;
+}
+
+.instruction h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 8vw, 2.25rem);
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.instruction p {
+  max-width: 42rem;
+  margin: 0.35rem auto 0;
+}
+
+.progress {
+  border-block: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  padding: 0.5rem 0;
+}
+
+.progress strong {
+  font-size: clamp(1.75rem, 9vw, 3.75rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.preparationCountdown {
+  display: block;
+  font-size: clamp(3rem, 18vw, 7rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: center;
+}
+
+.capabilityNotice {
+  margin: 0;
+  text-align: center;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: 1rem;
+  background: rgb(255 253 247 / 72%);
+  box-shadow: 0 0.45rem 1.4rem rgb(23 32 29 / 6%);
+  padding: 0.5rem;
+}
+
+.control,
+.primaryButton,
+.secondaryButton,
+.iconButton {
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.55rem 0.45rem;
+  line-height: 1.15;
+  overflow-wrap: break-word;
+  text-align: center;
+}
+
+.primaryButton {
+  background: var(--action, #df5a2a);
+  color: #1d150f;
+  font-weight: 800;
+}
+
+.secondaryButton,
+.control,
+.iconButton {
+  background: var(--paper-raised, #fffaf0);
+  color: inherit;
+}
+
+.control:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.skipControl {
+  margin-inline-start: 0;
+}
+
+.readyGate,
+.pauseSheet,
+.confirmSkip,
+.helpSheet {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.readyGate {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.readyGate .illustrationBoundary {
+  grid-column: 1 / -1;
+}
+
+.readyGate button,
+.transitionActions button {
+  width: 100%;
+}
+
+.transitionActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.illustrationBoundary {
+  border-left: 0.25rem solid var(--coach, #3d9ed8);
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.9rem;
+}
+
+.pauseSheet,
+.confirmSkip,
+.helpSheet {
+  background: var(--paper-raised, #fffaf0);
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: 1rem;
+  box-sizing: border-box;
+  box-shadow: 0 1rem 3rem rgb(24 32 48 / 16%);
+  inset: auto max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  max-block-size: calc(100dvb - max(1rem, env(safe-area-inset-top)) - max(1rem, env(safe-area-inset-bottom)));
+  max-height: calc(100dvh - max(1rem, env(safe-area-inset-top)) - max(1rem, env(safe-area-inset-bottom)));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1rem;
+  position: fixed;
+  z-index: 3;
+}
+
+@media (max-width: 21.25rem) {
+  .topRail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .topRail button {
+    width: 100%;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 600px) {
+  .player {
+    padding-block: max(0.25rem, env(safe-area-inset-top)) max(0.25rem, env(safe-area-inset-bottom));
+  }
+
+  .nonModalSurface {
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+    grid-template-rows: auto minmax(min-content, 1fr) auto auto auto auto;
+    gap: 0.125rem;
+    width: 100%;
+  }
+
+  .topRail {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .coachStage {
+    grid-column: 1;
+    grid-row: 2 / 7;
+    align-self: stretch;
+  }
+
+  .coachStage > svg {
+    width: auto;
+    max-width: min(100%, 20rem);
+    height: auto;
+    max-height: 100%;
+  }
+
+  .coachStage > div {
+    width: min(100%, 18rem);
+  }
+
+  .instruction,
+  .preparationCountdown,
+  .progress,
+  .readyGate,
+  .transitionActions,
+  .capabilityNotice,
+  .controls {
+    grid-column: 2;
+  }
+
+  .instruction {
+    grid-row: 2;
+    align-self: end;
+  }
+
+  .instruction h1 {
+    font-size: clamp(1.45rem, 5.8dvh, 1.8rem);
+  }
+
+  .instruction p {
+    margin-top: 0.2rem;
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .preparationCountdown {
+    grid-row: 3;
+  }
+
+  .progress {
+    grid-row: 4;
+    padding: 0.25rem 0;
+  }
+
+  .progress strong {
+    font-size: clamp(2rem, 10dvh, 3rem);
+  }
+
+  .readyGate,
+  .transitionActions {
+    grid-row: 5;
+  }
+
+  .controls {
+    grid-row: 6;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .controls:has(button:nth-child(7)) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .illustrationBoundary {
+    padding-block: 0.2rem;
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+
+  .capabilityNotice {
+    grid-row: 7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player * {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms !important;
+  }
+}
