@@ -1087,10 +1087,10 @@ describe('checked release candidate', () => {
     const deploy = workflow.match(/\n  deploy:\n(?<body>[\s\S]*)$/)?.groups?.body ?? '';
     const actionPins = [
       ['actions/checkout', '3d3c42e5aac5ba805825da76410c181273ba90b1', 'v7.0.1'],
-      ['actions/setup-node', '820762786026740c76f36085b0efc47a31fe5020', 'v7.0.0'],
+      ['actions/setup-node', '949feb2413d6458794dcd2491c4babbbce0c15c1', 'v7.1.0'],
       ['actions/configure-pages', '45bfe0192ca1faeb007ade9deae92b16b8254a0d', 'v6.0.0'],
       ['actions/upload-pages-artifact', 'fc324d3547104276b827a68afc52ff2a11cc49c9', 'v5.0.0'],
-      ['actions/deploy-pages', 'cd2ce8fcbc39b97be8ca5fce6e763baed58fa128', 'v5.0.0'],
+      ['actions/deploy-pages', '368f82528645a54fb793d4d04e342629a3f51346', 'v5.0.1'],
     ];
 
     assert.match(workflow, /\npermissions: \{\}\n/);
